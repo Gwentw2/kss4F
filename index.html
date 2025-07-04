@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>KSS 4F</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", "Noto Sans TC", "PingFang TC", "Heiti TC", sans-serif;
+      background-color: #ffeef0;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    table {
+      width: 90%;
+      margin: 1em auto;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+
+    #login, #admin-panel {
+      width: 90%;
+      margin: 1em auto;
+      padding: 1em;
+      border: 1px solid #ccc;
+      background: white;
+    }
+
+    input, select, button {
+      margin: 4px;
+      padding: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .btn {
+      padding: 5px 10px;
+    }
+
+    label {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>KSS 4F</h1>
+
+  <div style="text-align:center">
+    <label for="datePicker">選擇日期：</label>
+    <input type="date" id="datePicker" />
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>日期</th>
+        <th>時間</th>
+        <th>聯絡人</th>
+        <th class="admin-only hidden">操作</th>
+      </tr>
+    </thead>
+    <tbody id="scheduleBody"></tbody>
+  </table>
+
+  <div id="login">
+    <h3>管理員登入</h3>
+    <input type="text" id="adminName" placeholder="管理員帳號" />
+    <input type="password" id="adminPassword" placeholder="密碼" />
+    <button onclick="login()">登入</button>
+  </div>
+
+  <div id="admin-panel" class="hidden">
+    <h3>新增 / 編輯 排程</h3>
+    <input type="date" id="form-date" />
+    <label>開始時間：</label>
+    <select id="form-start">
+      <option value="">--</option>
+      <option value="09:00">09:00</option>
+      <option value="09:30">09:30</option>
+      <option value="10:00">10:00</option>
+      <option value="10:30">10:30</option>
+      <option value="11:00">11:00</option>
+      <option value="11:30">11:30</option>
+      <option value="12:00">12:00</option>
+      <option value="12:30">12:30</option>
+      <option value="13:00">13:00</option>
+      <option value="13:30">13:30</option>
+      <option value="14:00">14:00</option>
+      <option value="14:30">14:30</option>
+      <option value="15:00">15:00</option>
+      <option value="15:30">15:30</option>
+      <option value="16:00">16:00</option>
+      <option value="16:30">16:30</option>
+      <option value="17:00">17:00</option>
+      <option value="17:30">17:30</option>
+      <option value="18:00">18:00</option>
+      <option value="18:30">18:30</option>
+      <option value="19:00">19:00</option>
+      <option value="19:30">19:30</option>
+      <option value="20:00">20:00</option>
+      <option value="20:30">20:30</option>
+      <option value="21:00">21:00</option>
+      <option value="21:30">21:30</option>
+    </select>
+    <label>結束時間：</label>
+    <select id="form-end">
+      <option value="">--</option>
+      <option value="09:00">09:00</option>
+      <option value="09:30">09:30</option>
+      <option value="10:00">10:00</option>
+      <option value="10:30">10:30</option>
+      <option value="11:00">11:00</option>
+      <option value="11:30">11:30</option>
+      <option value="12:00">12:00</option>
+      <option value="12:30">12:30</option>
+      <option value="13:00">13:00</option>
+      <option value="13:30">13:30</option>
+      <option value="14:00">14:00</option>
+      <option value="14:30">14:30</option>
+      <option value="15:00">15:00</option>
+      <option value="15:30">15:30</option>
+      <option value="16:00">16:00</option>
+      <option value="16:30">16:30</option>
+      <option value="17:00">17:00</option>
+      <option value="17:30">17:30</option>
+      <option value="18:00">18:00</option>
+      <option value="18:30">18:30</option>
+      <option value="19:00">19:00</option>
+      <option value="19:30">19:30</option>
+      <option value="20:00">20:00</option>
+      <option value="20:30">20:30</option>
+      <option value="21:00">21:00</option>
+      <option value="21:30">21:30</option>
+    </select>
+    <br />
+    <input type="text" id="form-person" placeholder="聯絡人" />
+    <button onclick="addSchedule()">新增排程</button>
+    <button onclick="logout()">登出</button>
+  </div>
+
+ <script>
+  const API_URL = 'https://script.google.com/a/macros/kss.org.tw/s/AKfycbw188gWKJQRnJLH98kf_vLRtZ7gKUMhHX-9M3A8lUXNalvIu2ftcs8loBAcucho7rE3/exec';
+
+  const admins = {
+    admin1: 'pw1',
+    admin2: 'pw2',
+    admin3: 'pw3',
+  };
+
+  let isAdmin = false;
+
+  const datePicker = document.getElementById('datePicker');
+  const scheduleBody = document.getElementById('scheduleBody');
+
+  function loadSchedule() {
+    const date = datePicker.value;
+    scheduleBody.innerHTML = '';
+
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        const filtered = data.filter(item => item.date === date);
+        filtered.forEach((item, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.date}</td>
+            <td>${item.time}</td>
+            <td>${item.person}</td>
+            ${
+              isAdmin
+                ? `<td><button disabled>刪除</button></td>` // 暫不支援刪除功能
+                : ''
+            }
+          `;
+          scheduleBody.appendChild(row);
+        });
+
+        document.querySelectorAll('.admin-only').forEach(el => {
+          el.classList.toggle('hidden', !isAdmin);
+        });
+      })
+      .catch(err => {
+        console.error('資料載入失敗：', err);
+        alert('無法載入排程資料');
+      });
+  }
+
+  function addSchedule() {
+    const date = document.getElementById('form-date').value;
+    const start = document.getElementById('form-start').value;
+    const end = document.getElementById('form-end').value;
+    const person = document.getElementById('form-person').value;
+
+    if (!date || !start || !end || !person) {
+      alert('請填寫所有欄位');
+      return;
+    }
+
+    const time = `${start} ～ ${end}`;
+    const payload = { date, time, person };
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(res => res.text())
+      .then(msg => {
+        console.log('新增成功：', msg);
+        loadSchedule();
+      })
+      .catch(err => {
+        console.error('新增失敗：', err);
+        alert('無法新增排程');
+      });
+  }
+
+  function login() {
+    const name = document.getElementById('adminName').value;
+    const pw = document.getElementById('adminPassword').value;
+    if (admins[name] === pw) {
+      isAdmin = true;
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('admin-panel').classList.remove('hidden');
+      loadSchedule();
+    } else {
+      alert('登入失敗');
+    }
+  }
+
+  function logout() {
+    isAdmin = false;
+    document.getElementById('login').classList.remove('hidden');
+    document.getElementById('admin-panel').classList.add('hidden');
+    loadSchedule();
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  datePicker.value = today;
+  datePicker.addEventListener('change', loadSchedule);
+  loadSchedule();
+</script>
+
+</body>
+</html>
