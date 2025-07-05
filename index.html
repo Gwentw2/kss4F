@@ -152,7 +152,7 @@
     async function loadSchedule() {
       const date = datePicker.value;
       const { data, error } = await supabase
-        .from('schedules')
+        .from('schedule')
         .select('*')
         .eq('date', date)
         .order('time', { ascending: true });
@@ -193,7 +193,7 @@
       }
 
       const time = `${start} ～ ${end}`;
-      const { error } = await supabase.from('schedules').insert([
+      const { error } = await supabase.from('schedule').insert([
         { date, time, person }
       ]);
 
@@ -205,7 +205,7 @@
     }
 
     async function deleteSchedule(id) {
-      const { error } = await supabase.from('schedules').delete().eq('id', id);
+      const { error } = await supabase.from('schedule').delete().eq('id', id);
       if (error) {
         alert('刪除失敗');
       } else {
