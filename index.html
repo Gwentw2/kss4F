@@ -144,7 +144,14 @@
       'https://dldircttlhzvshjtrlin.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsZGlyY3R0bGh6dnNoanRybGluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2ODExMjMsImV4cCI6MjA2NzI1NzEyM30.IcU5PoqlQE0hOIps0DEPblRpiv8OenoLZvDk1yy-It8'
     );
-
+    
+    function formatDateWithWeekday(dateStr) {
+      const date = new Date(dateStr);
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+      const day = weekdays[date.getDay()];
+      return `${dateStr}（${day}）`;
+    }
+    
     const admins = {
       admin1: 'pw1',
       gwen: '102286',
@@ -171,7 +178,7 @@
         data.forEach((item, index) => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td>${item.date}</td>
+            <td>${formatDateWithWeekday(item.date)}</td>
             <td>${item.time}</td>
             <td>${item.person}</td>
             ${
