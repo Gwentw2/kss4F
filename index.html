@@ -104,6 +104,7 @@
           <th>日期</th>
           <th>時間</th>
           <th>聯絡人</th>
+          <th class="admin-only hidden">新增者</th>
           <th class="admin-only hidden">新增時間</th>
           <th class="admin-only hidden">操作</th>
         </tr>
@@ -151,6 +152,7 @@
     };
 
     let isAdmin = false;
+    let currentAdmin = '';
 
     const datePicker = document.getElementById('datePicker');
     const scheduleBody = document.getElementById('scheduleBody');
@@ -174,7 +176,9 @@
             <td>${item.person}</td>
             ${
               isAdmin
-                ? `<td>${new Date(item.created_at).toLocaleString()}</td><td><button onclick="deleteSchedule(${item.id})">刪除</button></td>`
+                ? `<td>${item.created_by || ''}</td>
+                   <td>${new Date(item.created_at).toLocaleString()}</td>
+                   <td><button onclick="deleteSchedule(${item.id})">刪除</button></td>`
                 : ''
             }
           `;
@@ -200,7 +204,7 @@
 
       const time = `${start} ～ ${end}`;
       const { error } = await supabase.from('schedule').insert([
-        { date, time, person }
+        { date, time, person, created_by: currentAdmin }
       ]);
 
       if (error) {
@@ -224,6 +228,7 @@
       const pw = document.getElementById('adminPassword').value;
       if (admins[name] === pw) {
         isAdmin = true;
+        currentAdmin = name; 
         document.getElementById('login').classList.add('hidden');
         document.getElementById('admin-panel').classList.remove('hidden');
         loadSchedule();
@@ -234,6 +239,7 @@
 
     function logout() {
       isAdmin = false;
+      currentAdmin = '';
       document.getElementById('login').classList.remove('hidden');
       document.getElementById('admin-panel').classList.add('hidden');
       loadSchedule();
