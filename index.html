@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KSS 4F (Supabase)</title>
-  <label for="datePicker">選擇日期：</label>
-  <input type="date" id="datePicker" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
@@ -23,7 +21,12 @@
       font-size: 48px;
       margin-top: 1rem;
     }
-
+    
+    label[for="datePicker"] {
+    font-size: 1.5em;
+    font-weight: bold;
+    }
+    
     #datePicker {
       padding: 0.5em 1em;
       font-size: 1.5em;
