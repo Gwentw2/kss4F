@@ -2,22 +2,36 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>KSS 4F</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KSS 4F (Supabase)</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
-      font-family: "Microsoft JhengHei", "Noto Sans TC", "PingFang TC", "Heiti TC", sans-serif;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
       background-color: #ffeef0;
+      margin: 0;
+      padding: 0;
     }
 
     h1 {
       text-align: center;
+      font-size: 1.8em;
+      margin-top: 1rem;
+    }
+
+    #datePicker {
+      padding: 0.5em;
+      font-size: 1em;
+      margin: 1rem 0;
     }
 
     table {
-      width: 90%;
+      width: 100%;
+      max-width: 960px;
       margin: 1em auto;
       border-collapse: collapse;
       background: white;
+      overflow-x: auto;
     }
 
     th, td {
@@ -27,28 +41,46 @@
     }
 
     #login, #admin-panel {
-      width: 90%;
+      width: 100%;
+      max-width: 960px;
       margin: 1em auto;
       padding: 1em;
       border: 1px solid #ccc;
       background: white;
+      box-sizing: border-box;
     }
 
     input, select, button {
       margin: 4px;
-      padding: 5px;
+      padding: 6px 8px;
+      font-size: 1em;
     }
 
     .hidden {
       display: none;
     }
 
-    .btn {
-      padding: 5px 10px;
-    }
-
     label {
       margin-right: 5px;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        font-size: 14px;
+      }
+
+      input, select, button {
+        width: 100%;
+        margin: 6px 0;
+      }
+
+      #login, #admin-panel {
+        padding: 1em 0.5em;
+      }
+
+      th, td {
+        padding: 6px;
+      }
     }
   </style>
 </head>
@@ -60,17 +92,19 @@
     <input type="date" id="datePicker" />
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>日期</th>
-        <th>時間</th>
-        <th>聯絡人</th>
-        <th class="admin-only hidden">操作</th>
-      </tr>
-    </thead>
-    <tbody id="scheduleBody"></tbody>
-  </table>
+  <div style="overflow-x: auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>日期</th>
+          <th>時間</th>
+          <th>聯絡人</th>
+          <th class="admin-only hidden">操作</th>
+        </tr>
+      </thead>
+      <tbody id="scheduleBody"></tbody>
+    </table>
+  </div>
 
   <div id="login">
     <h3>管理員登入</h3>
@@ -82,95 +116,51 @@
   <div id="admin-panel" class="hidden">
     <h3>新增 / 編輯 排程</h3>
     <input type="date" id="form-date" />
-    <label>開始時間：</label>
+    <br />
+    <label>開始：</label>
     <select id="form-start">
       <option value="">--</option>
-      <option value="09:00">09:00</option>
-      <option value="09:30">09:30</option>
-      <option value="10:00">10:00</option>
-      <option value="10:30">10:30</option>
-      <option value="11:00">11:00</option>
-      <option value="11:30">11:30</option>
-      <option value="12:00">12:00</option>
-      <option value="12:30">12:30</option>
-      <option value="13:00">13:00</option>
-      <option value="13:30">13:30</option>
-      <option value="14:00">14:00</option>
-      <option value="14:30">14:30</option>
-      <option value="15:00">15:00</option>
-      <option value="15:30">15:30</option>
-      <option value="16:00">16:00</option>
-      <option value="16:30">16:30</option>
-      <option value="17:00">17:00</option>
-      <option value="17:30">17:30</option>
-      <option value="18:00">18:00</option>
-      <option value="18:30">18:30</option>
-      <option value="19:00">19:00</option>
-      <option value="19:30">19:30</option>
-      <option value="20:00">20:00</option>
-      <option value="20:30">20:30</option>
-      <option value="21:00">21:00</option>
-      <option value="21:30">21:30</option>
     </select>
-    <label>結束時間：</label>
+    <label>結束：</label>
     <select id="form-end">
       <option value="">--</option>
-      <option value="09:00">09:00</option>
-      <option value="09:30">09:30</option>
-      <option value="10:00">10:00</option>
-      <option value="10:30">10:30</option>
-      <option value="11:00">11:00</option>
-      <option value="11:30">11:30</option>
-      <option value="12:00">12:00</option>
-      <option value="12:30">12:30</option>
-      <option value="13:00">13:00</option>
-      <option value="13:30">13:30</option>
-      <option value="14:00">14:00</option>
-      <option value="14:30">14:30</option>
-      <option value="15:00">15:00</option>
-      <option value="15:30">15:30</option>
-      <option value="16:00">16:00</option>
-      <option value="16:30">16:30</option>
-      <option value="17:00">17:00</option>
-      <option value="17:30">17:30</option>
-      <option value="18:00">18:00</option>
-      <option value="18:30">18:30</option>
-      <option value="19:00">19:00</option>
-      <option value="19:30">19:30</option>
-      <option value="20:00">20:00</option>
-      <option value="20:30">20:30</option>
-      <option value="21:00">21:00</option>
-      <option value="21:30">21:30</option>
     </select>
     <br />
     <input type="text" id="form-person" placeholder="聯絡人" />
+    <br />
     <button onclick="addSchedule()">新增排程</button>
     <button onclick="logout()">登出</button>
   </div>
 
- <script>
-  const API_URL = 'https://script.google.com/a/macros/kss.org.tw/s/AKfycbw188gWKJQRnJLH98kf_vLRtZ7gKUMhHX-9M3A8lUXNalvIu2ftcs8loBAcucho7rE3/exec';
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://dldircttlhzvshjtrlin.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsZGlyY3R0bGh6dnNoanRybGluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2ODExMjMsImV4cCI6MjA2NzI1NzEyM30.IcU5PoqlQE0hOIps0DEPblRpiv8OenoLZvDk1yy-It8'
+    );
 
-  const admins = {
-    admin1: 'pw1',
-    admin2: 'pw2',
-    admin3: 'pw3',
-  };
+    const admins = {
+      admin1: 'pw1',
+      admin2: 'pw2',
+      admin3: 'pw3',
+    };
 
-  let isAdmin = false;
+    let isAdmin = false;
 
-  const datePicker = document.getElementById('datePicker');
-  const scheduleBody = document.getElementById('scheduleBody');
+    const datePicker = document.getElementById('datePicker');
+    const scheduleBody = document.getElementById('scheduleBody');
 
-  function loadSchedule() {
-    const date = datePicker.value;
-    scheduleBody.innerHTML = '';
+    async function loadSchedule() {
+      const date = datePicker.value;
+      const { data, error } = await supabase
+        .from('schedules')
+        .select('*')
+        .eq('date', date)
+        .order('time', { ascending: true });
 
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(data => {
-        const filtered = data.filter(item => item.date === date);
-        filtered.forEach((item, index) => {
+      scheduleBody.innerHTML = '';
+
+      if (data) {
+        data.forEach((item, index) => {
           const row = document.createElement('tr');
           row.innerHTML = `
             <td>${item.date}</td>
@@ -178,79 +168,87 @@
             <td>${item.person}</td>
             ${
               isAdmin
-                ? `<td><button disabled>刪除</button></td>` // 暫不支援刪除功能
+                ? `<td><button onclick="deleteSchedule(${item.id})">刪除</button></td>`
                 : ''
             }
           `;
           scheduleBody.appendChild(row);
         });
+      }
 
-        document.querySelectorAll('.admin-only').forEach(el => {
-          el.classList.toggle('hidden', !isAdmin);
-        });
-      })
-      .catch(err => {
-        console.error('資料載入失敗：', err);
-        alert('無法載入排程資料');
+      document.querySelectorAll('.admin-only').forEach(el => {
+        el.classList.toggle('hidden', !isAdmin);
       });
-  }
-
-  function addSchedule() {
-    const date = document.getElementById('form-date').value;
-    const start = document.getElementById('form-start').value;
-    const end = document.getElementById('form-end').value;
-    const person = document.getElementById('form-person').value;
-
-    if (!date || !start || !end || !person) {
-      alert('請填寫所有欄位');
-      return;
     }
 
-    const time = `${start} ～ ${end}`;
-    const payload = { date, time, person };
+    async function addSchedule() {
+      const date = document.getElementById('form-date').value;
+      const start = document.getElementById('form-start').value;
+      const end = document.getElementById('form-end').value;
+      const person = document.getElementById('form-person').value;
 
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(res => res.text())
-      .then(msg => {
-        console.log('新增成功：', msg);
+      if (!date || !start || !end || !person) {
+        alert('請填寫所有欄位');
+        return;
+      }
+
+      const time = `${start} ～ ${end}`;
+      const { error } = await supabase.from('schedules').insert([
+        { date, time, person }
+      ]);
+
+      if (error) {
+        alert('新增失敗');
+      } else {
         loadSchedule();
-      })
-      .catch(err => {
-        console.error('新增失敗：', err);
-        alert('無法新增排程');
-      });
-  }
-
-  function login() {
-    const name = document.getElementById('adminName').value;
-    const pw = document.getElementById('adminPassword').value;
-    if (admins[name] === pw) {
-      isAdmin = true;
-      document.getElementById('login').classList.add('hidden');
-      document.getElementById('admin-panel').classList.remove('hidden');
-      loadSchedule();
-    } else {
-      alert('登入失敗');
+      }
     }
-  }
 
-  function logout() {
-    isAdmin = false;
-    document.getElementById('login').classList.remove('hidden');
-    document.getElementById('admin-panel').classList.add('hidden');
+    async function deleteSchedule(id) {
+      const { error } = await supabase.from('schedules').delete().eq('id', id);
+      if (error) {
+        alert('刪除失敗');
+      } else {
+        loadSchedule();
+      }
+    }
+
+    function login() {
+      const name = document.getElementById('adminName').value;
+      const pw = document.getElementById('adminPassword').value;
+      if (admins[name] === pw) {
+        isAdmin = true;
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        loadSchedule();
+      } else {
+        alert('登入失敗');
+      }
+    }
+
+    function logout() {
+      isAdmin = false;
+      document.getElementById('login').classList.remove('hidden');
+      document.getElementById('admin-panel').classList.add('hidden');
+      loadSchedule();
+    }
+
+    // 初始化
+    const today = new Date().toISOString().split('T')[0];
+    datePicker.value = today;
+    datePicker.addEventListener('change', loadSchedule);
     loadSchedule();
-  }
 
-  const today = new Date().toISOString().split('T')[0];
-  datePicker.value = today;
-  datePicker.addEventListener('change', loadSchedule);
-  loadSchedule();
-</script>
+    // 自動產生 09:00～21:30 的時間選單（每 30 分）
+    function generateTimeOptions(id) {
+      const select = document.getElementById(id);
+      for (let h = 9; h <= 21; h++) {
+        select.innerHTML += `<option value="${h.toString().padStart(2, '0')}:00">${h}:00</option>`;
+        select.innerHTML += `<option value="${h.toString().padStart(2, '0')}:30">${h}:30</option>`;
+      }
+    }
+    generateTimeOptions('form-start');
+    generateTimeOptions('form-end');
+  </script>
 </body>
 </html>
