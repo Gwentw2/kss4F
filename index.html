@@ -8,6 +8,8 @@
   <style>
     body {
       font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-size: 14px;         
+      font-weight: 400;
       background-color: #ffeef0;
       margin: 0;
       padding: 0;
@@ -15,19 +17,14 @@
 
     h1 {
       text-align: center;
+      font-weight: bold; 
       font-size: 3em;
-      font-weight: bold;
       margin-top: 1rem;
     }
-    
-    label[for="datePicker"] {
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-    
+
     #datePicker {
-      padding: 0.5em 1em;
-      font-size: 1.5em;
+      padding: 0.5em;
+      font-size: 1em;
       margin: 1rem 0;
     }
 
@@ -41,9 +38,9 @@
     }
 
     th, td {
-      border: 1px solid #aaa;
       font-size: 16px;
-      font-weight: 900;
+      font-weight: 500;
+      border: 1px solid #aaa;
       padding: 8px;
       text-align: center;
     }
@@ -59,8 +56,6 @@
     }
 
     input, select, button {
-      font-size: 16px;
-      font-weight: 500;
       margin: 4px;
       padding: 6px 8px;
       font-size: 1em;
@@ -76,8 +71,7 @@
 
     @media (max-width: 768px) {
       table, thead, tbody, th, td, tr {
-      font-size: 16px;
-      font-weight: 900;
+        font-size: 14px;
       }
 
       input, select, button {
@@ -110,8 +104,6 @@
           <th>日期</th>
           <th>時間</th>
           <th>聯絡人</th>
-          <th class="admin-only hidden">新增時間</th>
-          <th class="admin-only hidden">管理員</th>
           <th class="admin-only hidden">操作</th>
         </tr>
       </thead>
@@ -153,8 +145,8 @@
 
     const admins = {
       admin1: 'pw1',
-      gwen: '102286',
-      songan: '105286',
+      admin2: 'pw2',
+      admin3: 'pw3',
     };
 
     let isAdmin = false;
@@ -170,25 +162,21 @@
         .eq('date', date)
         .order('time', { ascending: true });
 
-      console.log(data);
-
       scheduleBody.innerHTML = '';
 
       if (data) {
         data.forEach((item, index) => {
           const row = document.createElement('tr');
-          row.innerHTML = `
+          row.innerHTML = 
             <td>${item.date}</td>
             <td>${item.time}</td>
             <td>${item.person}</td>
             ${
               isAdmin
-                ? `<td>${new Date(item.created_at).toLocaleString()}</td>
-                <td>${item.created_by || ''}</td>
-                <td><button onclick="deleteSchedule(${item.id})">刪除</button></td>`
+                ? <td><button onclick="deleteSchedule(${item.id})">刪除</button></td>
                 : ''
             }
-          `;
+          ;
           scheduleBody.appendChild(row);
         });
       }
@@ -209,9 +197,9 @@
         return;
       }
 
-      const time = `${start} ～ ${end}`;
+      const time = ${start} ～ ${end};
       const { error } = await supabase.from('schedule').insert([
-        { date, time, person, created_by: currentAdmin }
+        { date, time, person }
       ]);
 
       if (error) {
@@ -230,15 +218,11 @@
       }
     }
 
-    let isAdmin = false;
-    let currentAdmin = null;
-    
     function login() {
       const name = document.getElementById('adminName').value;
       const pw = document.getElementById('adminPassword').value;
       if (admins[name] === pw) {
         isAdmin = true;
-        currentAdmin = name;
         document.getElementById('login').classList.add('hidden');
         document.getElementById('admin-panel').classList.remove('hidden');
         loadSchedule();
@@ -249,7 +233,6 @@
 
     function logout() {
       isAdmin = false;
-      currentAdmin = null; 
       document.getElementById('login').classList.remove('hidden');
       document.getElementById('admin-panel').classList.add('hidden');
       loadSchedule();
@@ -265,8 +248,8 @@
     function generateTimeOptions(id) {
       const select = document.getElementById(id);
       for (let h = 9; h <= 21; h++) {
-        select.innerHTML += `<option value="${h.toString().padStart(2, '0')}:00">${h}:00</option>`;
-        select.innerHTML += `<option value="${h.toString().padStart(2, '0')}:30">${h}:30</option>`;
+        select.innerHTML += <option value="${h.toString().padStart(2, '0')}:00">${h}:00</option>;
+        select.innerHTML += <option value="${h.toString().padStart(2, '0')}:30">${h}:30</option>;
       }
     }
     generateTimeOptions('form-start');
