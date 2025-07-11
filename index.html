@@ -176,7 +176,6 @@
         .from('schedule')
         .select('*')
         .eq('date', date)
-        .eq('is_deleted', false)
         .order('time', { ascending: true });
 
       scheduleBody.innerHTML = '';
@@ -229,7 +228,7 @@
     }
 
     async function deleteSchedule(id) {
-      const { error } = await supabase.from('schedule').update({ is_deleted: true }).eq('id', id);
+      const { error } = await supabase.from('schedule').delete().eq('id', id);
       if (error) {
         alert('刪除失敗');
       } else {
